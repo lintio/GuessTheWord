@@ -203,6 +203,16 @@ def menu():
      |    Congratulations!!
     / \\
             """)
+        else:
+            print("""
+    /---\\
+    |   |
+    |   o
+    |  /|\\   Hangman
+    |  / \\
+    |
+   / \\____
+   """)
         print(feedback)
         print('Current settings - Max Word length =', wordlength, ' & tries =', level, '-')
         print('1) Play')
