@@ -1,5 +1,6 @@
-import random, os
-from words import word_list
+import random, os, sys
+from words import word_list as wordList
+feedback = ''
 
 hangman = ["""
     /---\\
@@ -33,6 +34,7 @@ hangman = ["""
     |   |
     |   o
     |  /|
+    |
     |
    / \\____
    """,
@@ -100,163 +102,133 @@ hangman = ["""
    _
    """]
 
-def selectWord(word_lenght):
-    #select a random word from the list and changing it to upper case
-    new_word = random.choice(word_list).upper()
-    while len(new_word) > word_lenght:
-        new_word = random.choice(word_list).upper()
-    return(new_word)
+def selectWord(wordLenght, lastWord):
+    #select a new word from word list and change to upper case
+    newWord = random.choice(wordList).upper()
+    if newWord == lastWord:
+        newWord = random.choice(wordList).upper()
+    else:
+        while len(newWord) > wordLenght:
+            newWord = random.choice(wordList).upper()
+    return(newWord)
 
-def play(word, level, word_lenght):
-    #setting up veriabled for later use
-    currentWord = word
-    guessed_letters = []
-    guessed_words = []
-    #lives = level
+def play(currentWord, level, wordLenght):
+    #init vers
+    global feedback
+    activeWord = currentWord
+    guessedLetters = []
+    guessedWords = []
     attempts = level
-    word_completion = '_' * len(currentWord)
+    wordCompletion = '_' * len(activeWord)
     guessed = False
-    response = ''
-    #loop until guessed is true or attempts = 0
     while guessed == False:
-
-        # This section is not working correctly or it could be the play again option not updating the word
-
+        #check for lose
         if attempts == 0 and guessed == False:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print(currentWord)
-            print('letters guessed ', guessed_letters)
-            print('words guessed ', guessed_words)
-            print(hangman[attempts])
-            print('\n')
-            print(word_completion)
-            print('sorry you lost the word was', currentWord)
-            try_again = input('Would you like to play again (Y/N) ->')
-            try_again = try_again.upper()
-            if try_again == 'Y':
-                #seems to not reset the word for this bit
-                guessed_letters = []
-                guessed_words = []
-                word_completion = '_' * len(currentWord)
-                guessed = False
-                menu(1)
-            if try_again == 'N':
-                break
-            else:
-                response = 'not a valid input'
+            feedback = 'sorry you lost the word was ' + activeWord
+            menu()
         else:
-            #quick and dirty output to see if it is working
             os.system('cls' if os.name == 'nt' else 'clear')
-            print(currentWord)
-            print('letters guessed ', guessed_letters)
-            print('words guessed ', guessed_words)
+            print(activeWord) #see word for testing
+            print('Guessed letters -', guessedLetters, 'Guessed Words -', guessedWords)
             print(hangman[attempts])
             print('\n')
-            print(word_completion)
-            print(response)
-            #take the users input and makes it upper case
+            print(wordCompletion)
+            print(feedback)
             guess = input('->').upper()
+            #check input is a string
             if guess.isalpha():
-                #checks to see if its a letter
+                
+                #check if input is a letter or word
+                #checks if letter
                 if len(guess) == 1:
-                    #check to see if it is in the guessed_letters array and the word
-                    if guess not in guessed_letters and guess not in currentWord:
-                        guessed_letters.append(guess)
+                    if guess not in guessedLetters and guess not in activeWord:
+                        guessedLetters.append(guess)
                         attempts -= 1
-                        response = 'sorry that letter is not in the word'
-                    elif guess in guessed_letters:
-                        response = 'you have already guessed the letter', guess
+                        feedback = 'Sorry that letter is not in the word'
+                    elif guess in guessedLetters:
+                        feedback = 'you have already guessed ' + guess
                     else:
-                        guessed_letters.append(guess)
-                        #checks if the letter is in the word by converting the word to a list and then back again
-                        for x, letter in enumerate(currentWord):
+                        guessedLetters.append(guess)
+                        #find index of letter in activeWord
+                        for x, letter in enumerate(activeWord):
                             if guess == letter:
-                                word_completion = list(word_completion)
-                                word_completion[x] = letter
-                                word_completion = ''.join(word_completion)
-                        #checks to see if all letters have been guessed works to start with
-                        if word_completion == currentWord:
+                                wordCompletion = list(wordCompletion)
+                                wordCompletion[x] = letter
+                                wordCompletion = ''.join(wordCompletion)
+                        feedback = ''
+                        if wordCompletion == activeWord:
                             guessed = True
-                            response = 'Well done You guessed the word!', currentWord
-                #allows the player to guess the word as a whole
-                elif len(guess) == len(word):
-                    if guess not in guessed_words and guess != currentWord:
-                        guessed_words.append(guess)
+                            feedback = 'Well done you guessed the word! ' + activeWord
+                #checks if the guess is the length of activeWord
+                elif len(guess) == len(activeWord):
+                    if guess not in guessedWords and guess != activeWord:
+                        guessedWords.append(guess)
                         attempts -= 1
-                        response = 'Sorry, That is not the word'
-                    elif guess in guessed_words:
-                        response = 'Sorry, You have already guessed', guess
+                        feedback = 'Sorry, ' + guess + ' is not the word'
+                    elif guess in guessedWords:
+                        feedback = 'You have already guessed ' + guess
                     else:
-                        response = 'Well done You guessed the word!', currentWord
-                        guessed_letters = []
-                        guessed_words = []
-                        word_completion = '_' * len(currentWord)
+                        feedback = 'Well done you guessed the word! ' + activeWord
                         guessed = True
                 else:
-                    response = 'Sorry, thats not a valid input'
-    return(guessed)
+                    feedback = 'Sorry that is not a valid guess'
 
-def menu(option, word):
-    menu_select = option
-    word_lenght = 10
-    trys = 5
-    guessed = False
-    word = word
-    if menu_select == 1:
-        word = selectWord(word_lenght)
-        guessed = play(word, trys, word_lenght)
-    else:
-        while menu_select != 3:
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print('Current settings - Max Word Lenght =', word_lenght, ' & trys =', trys, '-')
-            if guessed == True:
-                print('Congradulations you won!!')
-            elif guessed == False:
-                print('Better luck next time. The last word was', word)
-            print('1) Play')
-            print('2) Change Settings')
-            print('3) Quit')
-            menu_select = input('->')
-            if menu_select.isdigit():
-                menu_select = int(menu_select)
-                if menu_select == 3:
-                    break
-                elif menu_select == 1:
-                    word = selectWord(word_lenght)
-                    guessed = play(word, trys, word_lenght)
-                elif menu_select == 2:
-                    os.system('cls' if os.name == 'nt' else 'clear')
-                    print('Current settings - Max Word Lenght =', word_lenght, ' & trys =', trys, '-')
-                    print('1) Easy (max word lenght 4 & trys = 10)')
-                    print('2) Normal (max word lenght 6 & trys = 7)')
-                    print('3) Hard (max word lenght 10 trys = 5)')
-                    print('4) Insane (max word lenght 100 trys = 2)')
-                    print('5) Back')
-                    diff_select = input('->')
-                    if diff_select.isdigit():
-                        diff_select = int(diff_select)
-                        if diff_select == 5:
-                            continue
-                        elif diff_select == 1:
-                            word_lenght = 4
-                            trys = 10
-                        elif diff_select == 2:
-                            word_lenght = 6
-                            trys = 7
-                        elif diff_select == 3:
-                            word_lenght = 10
-                            trys = 5
-                        elif diff_select == 4:
-                            word_lenght = 100
-                            trys = 2
-                        else:
-                            print('Sorry, thats not a valid selection')
+def menu():
+    global feedback
+    menuSelect = 5
+    wordLenght = 10
+    level = 5
+    lastWord = ''
+    while menuSelect != 3:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(feedback)
+        print(menuSelect)
+        print('Current settings - Max Word Lenght =', wordLenght, ' & trys =', level, '-')
+        print('1) Play')
+        print('2) Change Settings')
+        print('3) Quit')
+        menuSelect = input('->')
+        if menuSelect.isdigit:
+            menuSelect = int(menuSelect)
+            if menuSelect == 3:
+                exit()
+            elif menuSelect == 1: #Play
+                newWord = selectWord(wordLenght, lastWord)
+                lastWord = newWord
+                feedback = ''
+                play(newWord, level, wordLenght)
+            elif menuSelect == 2: #Settings
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print('Current settings - Max Word Lenght =', wordLenght, ' & trys =', level, '-')
+                print('1) Easy (max word lenght 4 & trys = 10)')
+                print('2) Normal (max word lenght 6 & trys = 7)')
+                print('3) Hard (max word lenght 10 trys = 5)')
+                print('4) Insane (max word lenght 100 trys = 2)')
+                print('5) Back')
+                diffSelect = input('->')
+                if diffSelect.isdigit():
+                    diffSelect = int(diffSelect)
+                    if diffSelect == 5:
+                        continue
+                    elif diffSelect == 1:
+                        wordLenght = 4
+                        level = 10
+                    elif diffSelect == 2:
+                        wordLenght = 6
+                        level = 7
+                    elif diffSelect == 3:
+                        wordLenght = 10
+                        level = 5
+                    elif diffSelect == 4:
+                        wordLenght = 100
+                        level = 2
                     else:
-                        print('Sorry, thats not a valid input')
+                        print('Sorry, thats not a valid selection')
                 else:
-                    print('Sorry, thats not a valid selection')
+                    print('Sorry, thats not a valid input')
             else:
                 print('Sorry, thats not a valid input')
+        else:
+            print('Sorry, thats not a valid input')
 
-
-menu(5)
+menu()
