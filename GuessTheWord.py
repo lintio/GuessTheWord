@@ -243,16 +243,16 @@ def menu():
                         continue
                     elif diffSelect == 1:
                         wordlength = 4
-                        level = 10
+                        level = 10 # attempts -1 - 10 9 8 7 6 5 4 3 2 1 0
                     elif diffSelect == 2:
                         wordlength = 6
-                        level = 7
+                        level = 6 #attempts -2 10 8 6 4 2 0
                     elif diffSelect == 3:
                         wordlength = 10
-                        level = 5
+                        level = 4 #attempts - 4 stop it at 0, 10 6 2 -2
                     elif diffSelect == 4:
                         wordlength = 100
-                        level = 2
+                        level = 2 # attempts -5 10 5 0
                     else:
                         print('Sorry, thats not a valid selection')
                 else:
