@@ -13,7 +13,7 @@ hangman = ["""
     /---\\
     |   |
     |   o
-    |  /|\\
+    |  /|\\   Hangman!
     |  / \\
     |
    / \\____
@@ -22,7 +22,7 @@ hangman = ["""
     /---\\
     |   |
     |   o
-    |  /|\\
+    |  /|\\   Hangman
     |  / 
     |
    / \\____
@@ -31,7 +31,7 @@ hangman = ["""
     /---\\
     |   |
     |   o
-    |  /|\\
+    |  /|\\   Hangma
     |  
     |
    / \\____
@@ -40,7 +40,7 @@ hangman = ["""
     /---\\
     |   |
     |   o
-    |  /|
+    |  /|    Hangm
     |
     |
    / \\____
@@ -49,7 +49,7 @@ hangman = ["""
     /---\\
     |   |
     |   o
-    |   |
+    |   |    Hang
     |  
     |
    / \\____
@@ -58,7 +58,7 @@ hangman = ["""
     /---\\
     |   |
     |   o
-    |  
+    |        Han
     |  
     |
    / \\____
@@ -67,7 +67,7 @@ hangman = ["""
     /---\\
     |   
     |   
-    |  
+    |        Ha
     |  
     |
    / \\____
@@ -76,7 +76,7 @@ hangman = ["""
     /
     |   
     |   
-    |  
+    |        H
     |  
     |
    / \\____
@@ -86,6 +86,15 @@ hangman = ["""
        
        
       
+    |  
+    |
+   / \\____
+   """,
+   """
+    
+       
+       
+    
       
     
    / \\____
@@ -93,20 +102,11 @@ hangman = ["""
    """
     
        
-       
-      
-      
-    
+       Let's Play Hangman!
+     Guess Letters and Words  
+    Words to save the Hangman!
+        
    _______
-   """,
-   """
-    
-       
-       
-      
-      
-    
-   _
    """]
 
 def selectWord(lastWord):
@@ -144,7 +144,7 @@ def play(currentWord):
             else:
                 print(hangman[attempts])
             print('\n')
-            print(wordCompletion)
+            print('-> ' + wordCompletion + ' <-')
             print(feedback)
             guess = input('->').upper()
             #check input is a string
