@@ -3,6 +3,12 @@ from words import word_list as wordList
 feedback = ''
 winLose = ''
 
+class settings:
+    wordlength = 10
+    level = 2
+    attempts = 5
+
+
 hangman = ["""
     /---\\
     |   |
@@ -103,24 +109,24 @@ hangman = ["""
    _
    """]
 
-def selectWord(wordlength, lastWord):
+def selectWord(lastWord):
     #select a new word from word list and change to upper case
     newWord = random.choice(wordList).upper()
     if newWord == lastWord:
         newWord = random.choice(wordList).upper()
     else:
-        while len(newWord) > wordlength:
+        while len(newWord) > settings.wordlength:
             newWord = random.choice(wordList).upper()
     return(newWord)
 
-def play(currentWord, level, wordlength):
+def play(currentWord):
     #init vers
     global feedback
     global winLose
     activeWord = currentWord
     guessedLetters = []
     guessedWords = []
-    attempts = level
+    attempts = 10
     wordCompletion = '_' * len(activeWord)
     guessed = False
     while guessed == False:
@@ -131,9 +137,12 @@ def play(currentWord, level, wordlength):
             menu()
         else:
             os.system('cls' if os.name == 'nt' else 'clear')
-            print(activeWord) #see word for testing
+           # print(activeWord) #see word for testing
             print('Guessed letters -', guessedLetters, 'Guessed Words -', guessedWords)
-            print(hangman[attempts])
+            if attempts <= 0:
+                print(hangman[0])
+            else:
+                print(hangman[attempts])
             print('\n')
             print(wordCompletion)
             print(feedback)
@@ -146,7 +155,7 @@ def play(currentWord, level, wordlength):
                 if len(guess) == 1:
                     if guess not in guessedLetters and guess not in activeWord:
                         guessedLetters.append(guess)
-                        attempts -= 1
+                        attempts -= settings.level
                         feedback = 'Sorry that letter is not in the word'
                     elif guess in guessedLetters:
                         feedback = 'you have already guessed ' + guess
@@ -167,7 +176,7 @@ def play(currentWord, level, wordlength):
                 elif len(guess) == len(activeWord):
                     if guess not in guessedWords and guess != activeWord:
                         guessedWords.append(guess)
-                        attempts -= 1
+                        attempts -= settings.level
                         feedback = 'Sorry, ' + guess + ' is not the word'
                     elif guess in guessedWords:
                         feedback = 'You have already guessed ' + guess
@@ -182,8 +191,6 @@ def menu():
     global feedback
     global winLose
     menuSelect = 5
-    wordlength = 10
-    level = 5
     lastWord = ''
     while menuSelect != 3:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -214,7 +221,7 @@ def menu():
    / \\____
    """)
         print(feedback)
-        print('Current settings - Max Word length =', wordlength, ' & tries =', level, '-')
+        print('Current settings - Max Word length =', settings.wordlength, '& tries =', settings.attempts, '-')
         print('1) Play')
         print('2) Change Settings')
         print('3) Quit')
@@ -224,16 +231,16 @@ def menu():
             if menuSelect == 3:
                 exit()
             elif menuSelect == 1: #Play
-                newWord = selectWord(wordlength, lastWord)
+                newWord = selectWord(lastWord)
                 lastWord = newWord
                 feedback = ''
-                play(newWord, level, wordlength)
+                play(newWord)
             elif menuSelect == 2: #Settings
                 os.system('cls' if os.name == 'nt' else 'clear')
-                print('Current settings - Max Word length =', wordlength, ' & tries =', level, '-')
+                print('Current settings - Max Word length =', settings.wordlength, '& tries =', settings.attempts, '-')
                 print('1) Easy (max word length 4 & tries = 10)')
-                print('2) Normal (max word length 6 & tries = 7)')
-                print('3) Hard (max word length 10 tries = 5)')
+                print('2) Normal (max word length 6 & tries = 5)')
+                print('3) Hard (max word length 10 tries = 3)')
                 print('4) Insane (max word length 100 tries = 2)')
                 print('5) Back')
                 diffSelect = input('->')
@@ -242,17 +249,21 @@ def menu():
                     if diffSelect == 5:
                         continue
                     elif diffSelect == 1:
-                        wordlength = 4
-                        level = 10 # attempts -1 - 10 9 8 7 6 5 4 3 2 1 0
+                        settings.wordlength = 4
+                        settings.level = 1
+                        settings.attempts = 10
                     elif diffSelect == 2:
-                        wordlength = 6
-                        level = 6 #attempts -2 10 8 6 4 2 0
+                        settings.wordlength = 6
+                        settings.level = 2
+                        settings.attempts = 5
                     elif diffSelect == 3:
-                        wordlength = 10
-                        level = 4 #attempts - 4 stop it at 0, 10 6 2 -2
+                        settings.wordlength = 10
+                        settings.level = 4
+                        settings.attempts = 3 
                     elif diffSelect == 4:
-                        wordlength = 100
-                        level = 2 # attempts -5 10 5 0
+                        settings.wordlength = 100
+                        settings.level = 5
+                        settings.attempts = 2
                     else:
                         print('Sorry, thats not a valid selection')
                 else:
